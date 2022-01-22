@@ -4,7 +4,7 @@
 # @Time      :1/21/22
 # @Author    :Eason Tang
 from flask import request
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 import db
 
 
@@ -12,18 +12,32 @@ class Grocery(Resource):
     def __init__(self):
         self.db_session = db.DB()
 
-    @staticmethod
-    def get():
+    def get(self):
         """
         This function takes user id and return all groceries the user have
         :return: Grocery.id[]
         """
-        json_data = request.get_json()  # Where it takes json data
-        if json_data['userid']:
-            pass
-        else:
-            return {"status": -1, "msg": ""}
-        return "This function takes user id and return all groceries the user have"
+        self.db_session.init_connection()
+        try:
+            json_data = request.get_json()  # Where it takes json data
+            if len(json_data) == 1 and json_data['userid']:
+                user_id = json_data['userid']
+                # Check if user id is existed
+                sql = "SELECT id FROM production.user WHERE id = %d" % user_id
+                status, err, ret = self.db_session.query(sql)
+                if not ret:
+                    return {"status": -1, "msg": "User id does not exist"}
+                # Get Grocery based on user id
+                sql = "SELECT id, nutrition_id, amount_g FROM production.grocery WHERE user_id = %d" % user_id
+                status, err, ret = self.db_session.query(sql)
+                if status == 0:
+                    return {"status": 0, "msg": ret}
+                else:
+                    return {"status": -1, "msg": "Some error happened"}
+            else:
+                return {"status": -1, "msg": "UserID is not valid"}
+        finally:
+            self.db_session.close()
 
     def post(self):
         """
@@ -64,7 +78,8 @@ class Grocery(Resource):
 
 
 class Search(Resource):
-    def post(self):
+    @staticmethod
+    def post():
         """
         This function takes user input and searches & return all nutrition
         :return: Grocery.id[]

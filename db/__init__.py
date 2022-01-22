@@ -3,3 +3,4 @@
 # @FileName  :__init__.py
 # @Time      :1/22/22
 # @Author    :Eason Tang
+from .db import DB

@@ -89,7 +89,7 @@ class Search(Resource):
         self.db_session.init_connection()
         try:
             json_data = request.get_json()
-            if len(json_data) >= 1 and json_data['keyword']:
+            if len(json_data) >= 1 and "keyword" in json_data:
                 reg_expression = "|".join(json_data['keyword'])
                 # todo Remove the Limit 20
                 sql = "SELECT id, name, category FROM production.nutrition WHERE name REGEXP '%s' LIMIT 20" % reg_expression

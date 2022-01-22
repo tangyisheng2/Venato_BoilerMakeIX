@@ -24,11 +24,11 @@ class LogIn(Resource):
                   f'AND password = "{str(json_data["password"])}" LIMIT  1'
             status, errmsg, ret = self.db_session.query(sql)
             if status == 0:  # Login Success
-                return {"status": 0, "userid": ret[0]['id'], "username": ret[0]['username']}
+                return {"status": 0, "msg": {"userid": ret[0]['id'], "username": ret[0]['username']}}
             else:
-                return {"status": status, "errmsg": errmsg}
+                return {"status": status, "msg": errmsg}
         else:
-            return {"status": -1, "errmsg": "Login Failed"}
+            return {"status": -1, "msg": "Login Failed"}
 
 
 class SignUp(Resource):
@@ -53,10 +53,10 @@ class SignUp(Resource):
                       f'AND password = "{str(json_data["password"])}" LIMIT  1'
                 status, errmsg, ret = self.db_session.query(sql)
                 if status == 0:
-                    return {"status": 0, "userid": ret[0]['id'], "username": ret[0]['username']}
+                    return {"status": 0, "msg": {"userid": ret[0]['id'], "username": ret[0]['username']}}
                 else:
-                    return {"status": status, "errmsg": errmsg}
+                    return {"status": status, "msg": errmsg}
             else:
-                return {"status": -1, "errmsg": "Some error occur, registration failed, the username might already taken"}
+                return {"status": -1, "msg": "Some error occur, registration failed, the username might already taken"}
         else:
-            return {"status": -2, "errmsg": "Username and password no valid"}
+            return {"status": -2, "msg": "Username and password no valid"}

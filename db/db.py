@@ -8,14 +8,9 @@ import pymysql.cursors
 
 class DB():
     def __init__(self):
-        pass
         # Connect to the database
         # Proxy is required
-        # self.connection = pymysql.connect(host='localhost',
-        #                                   user='root',
-        #                                   password='password',
-        #                                   database='test',
-        #                                   cursorclass=pymysql.cursors.DictCursor)
+        self.init_connection()
 
     # def query(self, sql, have_response: bool):
     #     """
@@ -42,6 +37,13 @@ class DB():
     #
     #     return -1, "Some Error Occurs", None
 
+    def init_connection(self):
+        self.connection = pymysql.connect(host='localhost',
+                                          user='root',
+                                          password='password',
+                                          database='test',
+                                          cursorclass=pymysql.cursors.DictCursor)
+
     def query(self, sql):
         """
         This function queries sql
@@ -50,23 +52,17 @@ class DB():
         :return:
         """
         try:
-            self.connection = pymysql.connect(host='localhost',
-                                              user='root',
-                                              password='password',
-                                              database='test',
-                                              cursorclass=pymysql.cursors.DictCursor)
             cursor = self.connection.cursor()
             cursor.execute(sql)
             if "INSERT" in sql:
                 self.connection.commit()
-
             ret = cursor.fetchall()
             return 0, None, ret
         except pymysql.err.Error:
             return -1, None, None
-        finally:
-            self.connection.close()
 
+    def close(self):
+        self.connection.close()
 
 
 if __name__ == '__main__':

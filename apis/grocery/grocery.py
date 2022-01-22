@@ -3,7 +3,8 @@
 # @FileName  :grocery.py
 # @Time      :1/21/22
 # @Author    :Eason Tang
-from flask_restful import Resource
+from flask import request
+from flask_restful import Resource, reqparse
 
 
 class Grocery(Resource):
@@ -22,3 +23,12 @@ class Grocery(Resource):
         :return: Grocery.id[]
         """
         return "This function Add groceries to the database"
+
+class Search(Resource):
+    def post(self):
+        """
+        This function takes user input and searches & return all nutrition
+        :return: Grocery.id[]
+        """
+        json_data = request.get_json()
+        return json_data

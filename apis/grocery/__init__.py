@@ -6,8 +6,9 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .grocery import Grocery
+from .grocery import Grocery, Search
 
 grocery_bp = Blueprint('grocery', __name__)
 api = Api(grocery_bp)
 api.add_resource(Grocery, '/grocery')
+api.add_resource(Search, '/grocery/search')

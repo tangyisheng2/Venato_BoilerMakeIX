@@ -21,7 +21,7 @@ class LogIn(Resource):
         try:
             json_data = request.get_json()  # Where it takes json data
             if json_data['username'] and json_data['password']:
-                sql = f'SELECT t.*  FROM test.user t  ' \
+                sql = f'SELECT t.*  FROM production.user t  ' \
                       f'WHERE username = "{str(json_data["username"])}" ' \
                       f'AND password = "{str(json_data["password"])}" LIMIT  1'
                 status, errmsg, ret = self.db_session.query(sql)
@@ -49,12 +49,12 @@ class SignUp(Resource):
             json_data = request.get_json()
             if json_data['username'] and json_data['password']:
                 # Register User
-                sql = f'INSERT INTO test.user (username,password) ' \
+                sql = f'INSERT INTO production.user (username,password) ' \
                       f'VALUES ("{json_data["username"]}","{json_data["password"]}")'
                 status, errmsg, ret = self.db_session.query(sql)
                 if status == 0:  # Login Success
                     # Fetch User
-                    sql = f'SELECT t.*  FROM test.user t  ' \
+                    sql = f'SELECT t.*  FROM production.user t  ' \
                           f'WHERE username = "{str(json_data["username"])}" ' \
                           f'AND password = "{str(json_data["password"])}" LIMIT  1'
                     status, errmsg, ret = self.db_session.query(sql)

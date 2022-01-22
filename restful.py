@@ -10,6 +10,8 @@ import sys
 # from OpenSSL import SSL
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+from flask_cors import CORS
+
 
 absPath = os.path.abspath(__file__)  # 返回代码段所在的位置，肯定是在某个.py文件中
 temPath = os.path.dirname(absPath)  # 往上返回一级目录，得到文件所在的路径
@@ -40,6 +42,7 @@ class Debug(Resource):
 
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 # Add Resources
 api.add_resource(Debug, '/')

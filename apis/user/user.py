@@ -12,7 +12,7 @@ class LogIn(Resource):
     def __init__(self):
         self.db_session = db.DB()
 
-    def post(self, username):
+    def post(self):
         """
         This function takes username and password and create a user
         :return: User info

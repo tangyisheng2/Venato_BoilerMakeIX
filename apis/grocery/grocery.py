@@ -78,11 +78,24 @@ class Grocery(Resource):
 
 
 class Search(Resource):
-    @staticmethod
-    def post():
+    def __init__(self):
+        self.db_session = db.DB()
+
+    def post(self):
         """
         This function takes user input and searches & return all nutrition
         :return: Grocery.id[]
         """
-        json_data = request.get_json()
-        return json_data
+        self.db_session.init_connection()
+        try:
+            json_data = request.get_json()
+            if len(json_data) >= 1 and json_data['keyword']:
+                reg_expression = "|".join(json_data['keyword'])
+                # todo Remove the Limit 20
+                sql = "SELECT id, name, category FROM production.nutrition WHERE name REGEXP '%s' LIMIT 20" % reg_expression
+                status, err, ret = self.db_session.query(sql)
+                return {"status": 0, "msg": ret}
+            else:
+                return {"status": -1, "msg": "Search Keyword is not valid"}
+        finally:
+            self.db_session.close()

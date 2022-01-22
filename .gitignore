@@ -1,3 +1,8 @@
+pysql_demo.py
+.DS_Store
+flask-google-cloud-example.py
+main.py
+
 # Pycharm Config
 .idea
 

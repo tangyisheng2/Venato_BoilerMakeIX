@@ -63,11 +63,13 @@ class SignUp(Resource):
                     else:
                         return {"status": status, "msg": errmsg}
                 else:
-                    return {"status": -1, "msg": "Some error occur, registration failed, the username might already taken"}
+                    return {"status": -1,
+                            "msg": "Some error occur, registration failed, the username might already taken"}
             else:
                 return {"status": -2, "msg": "Username and password no valid"}
         finally:
             self.db_session.close()
+
 
 class Meals(Resource):
     def __init__(self):
@@ -84,10 +86,10 @@ class Meals(Resource):
             parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
             args = parser.parse_args()
             user_id = args['user_id']
-            sql = 'SELECT m.*, i.amount, n.name FROM meal AS m ' \
-                'JOIN ingredient AS i ON i.meal_id = m.id ' \
-                'JOIN nutrition AS n ON i.nutrition_id = n.id ' \
-                'WHERE user_id = %d' % (user_id)
+            sql = 'SELECT m.*, i.amount_g, n.name FROM production.meal AS m ' \
+                  'JOIN production.ingredient AS i ON i.meal_id = m.id ' \
+                  'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
+                  'WHERE user_id = %d' % user_id
             status, err, ret = self.db_session.query(sql)
             if ret:
                 if status == 0:

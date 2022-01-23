@@ -82,21 +82,26 @@ class Meals(Resource):
         """
         self.db_session.init_connection()
         try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
-            args = parser.parse_args()
-            user_id = args['user_id']
-            sql = 'SELECT m.*, i.amount_g, n.name FROM production.meal AS m ' \
-                  'JOIN production.ingredient AS i ON i.meal_id = m.id ' \
-                  'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
-                  'WHERE user_id = %d' % user_id
-            status, err, ret = self.db_session.query(sql)
-            if ret:
-                if status == 0:
-                    return {"status": status, "msg": ret}
+            json_data = request.get_json()
+            if "user_id" in json_data:
+                user_id = json_data['user_id']
+                sql = 'SELECT m.*, i.amount_g, n.name FROM production.meal AS m ' \
+                      'JOIN production.ingredient AS i ON i.meal_id = m.id ' \
+                      'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
+                      'WHERE user_id = %d' % user_id
+                status, err, ret = self.db_session.query(sql)
+                if ret:
+                    # Convert date time to string
+                    for record in ret:
+                        if 'date' in record:
+                            record['date'] = str(ret[0]['date']).split(" ")[0]
+                    if status == 0:
+                        return {"status": status, "msg": ret}
+                    else:
+                        return {"status": status, "msg": "Something went wrong"}
                 else:
                     return {"status": status, "msg": "Something went wrong"}
             else:
-                return {"status": status, "msg": "Something went wrong"}
+                return {"status": -1, "msg": "Invalid Input"}
         finally:
             self.db_session.close()

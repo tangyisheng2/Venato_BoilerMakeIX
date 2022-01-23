@@ -34,9 +34,13 @@ class Meal(Resource):
                 return {"status": -1, "msg": "User id does not exist"}
             # Get Meals from user id
             # todo Take care of the limit here
-            sql = 'SELECT * FROM production.meal ' \
-                  'WHERE date >= "%s" AND date <= "%s" ' \
-                  'AND user_id = %d LIMIT 20' % (start_date, end_date, user_id)
+            # sql = 'SELECT * FROM production.meal ' \
+            #       'WHERE date >= "%s" AND date <= "%s" ' \
+            #       'AND user_id = %d LIMIT 20' % (start_date, end_date, user_id)
+            sql = 'SELECT m.*, i.amount_g, n.* FROM production.meal AS m ' \
+                  'JOIN production.ingredient AS i ON m.id = i.meal_id ' \
+                  'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
+                  'WHERE user_id = %d AND date >= "%s" AND date <= "%s"' % (user_id, start_date, end_date)
             status, err, ret = self.db_session.query(sql)
             # Convert date time to string
             if ret:

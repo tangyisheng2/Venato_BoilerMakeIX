@@ -84,7 +84,7 @@ class Meals(Resource):
             parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
             args = parser.parse_args()
             user_id = args['user_id']
-            sql = 'SELECT m.*, i.amount, n.name FROM meal AS m ' \
+            sql = 'SELECT m.*, i.amount_g, n.name FROM meal AS m ' \
                 'JOIN ingredient AS i ON i.meal_id = m.id ' \
                 'JOIN nutrition AS n ON i.nutrition_id = n.id ' \
                 'WHERE user_id = %d' % (user_id)

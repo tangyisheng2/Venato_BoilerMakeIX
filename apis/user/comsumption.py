@@ -59,7 +59,7 @@ class Comsumption(Resource):
                     # Fetch the last modified
                     sql = 'SELECT * FROM production.grocery WHERE id = %d LIMIT 1' % id
                     status, err, ret = self.db_session.query(sql)
-                    ans.append(ret)
+                    ans.append(*ret)
 
                 return {"status": 0, "ret": ans}
 

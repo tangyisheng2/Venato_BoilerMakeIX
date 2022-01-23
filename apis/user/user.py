@@ -70,7 +70,6 @@ class SignUp(Resource):
         finally:
             self.db_session.close()
 
-
 class Meals(Resource):
     def __init__(self):
         self.db_session = db.DB()

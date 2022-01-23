@@ -51,12 +51,12 @@ class Meal(Resource):
         try:
             json_data = request.get_json()
             # todo refine api
-            if len(json_data) >= 3 and "user_id" in json_data and "name" in json_data and "grocery" in json_data:
+            if len(json_data) >= 3 and "user_id" in json_data and "name" in json_data and "ingredient" in json_data:
                 # todo parse ingredient data to subtract from grocery
-                # Insert Data
+                # Insert Data to meal
                 user_id = json_data['user_id']
                 name = json_data['name']
-                grocery = json_data['grocery']
+                ingredient = json_data['ingredient']
                 # sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
                 #       % (user_id, name, grocery)
                 sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
@@ -66,9 +66,23 @@ class Meal(Resource):
                 sql = "SELECT last_insert_id()"
                 status, err, ret = self.db_session.query(sql)
                 last_id = ret[0]['last_insert_id()']
+                # Insert Data to Ingredient
+                for record in ingredient:
+                    if 'nutrition_id' in record and 'amount_g' in record:
+                        nutrition_id = record['nutrition_id']
+                        amount_g = record['amount_g']
+                        sql = 'INSERT INTO production.ingredient (meal_id, nutrition_id, amount_g) ' \
+                              'VALUES (%d, %d, %f)' % (last_id, nutrition_id, amount_g)
+                        status, err, ret = self.db_session.query(sql)
+                    else:
+                        return {"status": -1, "msg": "Failed to parse ingredient"}
                 # Fetch the inserted data
                 sql = 'SELECT * FROM production.meal WHERE id = %d LIMIT 1' % last_id
                 status, err, ret = self.db_session.query(sql)
+                # Convert date time to string
+                for record in ret:
+                    if 'date' in record:
+                        record['date'] = str(ret[0]['date']).split(" ")[0]
                 if status == 0:
                     return {"status": status, "msg": ret}
                 else:

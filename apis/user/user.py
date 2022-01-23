@@ -68,3 +68,34 @@ class SignUp(Resource):
                 return {"status": -2, "msg": "Username and password no valid"}
         finally:
             self.db_session.close()
+
+class Meals(Resource):
+    def __init__(self):
+        self.db_session = db.DB()
+
+    def post(self):
+        """
+        This function takes username and password, verify it and login and return the userinfo
+        :return:
+        """
+        self.db_session.init_connection()
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
+            args = parser.parse_args()
+            user_id = args['user_id']
+            sql = 'SELECT m.*, i.amount, n.name FROM meal AS m ' \
+                'JOIN ingredient AS i ON i.meal_id = m.id ' \
+                'JOIN nutrition AS n ON i.nutrition_id = n.id ' \
+                'WHERE user_id = %d' % (user_id)
+            status, err, ret = self.db_session.query(sql)
+            if ret:
+                if status == 0:
+                    return {"status": status, "msg": ret}
+                else:
+                    return {"status": status, "msg": "Something went wrong"}
+            else:
+                return {"status": status, "msg": "Something went wrong"}
+        finally:
+            self.db_session.close()
+

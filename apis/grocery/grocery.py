@@ -34,7 +34,10 @@ class Grocery(Resource):
                   'WHERE user_id = %d' % user_id
             status, err, ret = self.db_session.query(sql)
             if status == 0:
-                return {"status": 0, "msg": ret}
+                if ret:
+                    return {"status": 0, "msg": ret}
+                else:
+                    return {"status": -1, "msg": "The server returns nothing"}
             else:
                 return {"status": -1, "msg": "Some error happened"}
         # else:

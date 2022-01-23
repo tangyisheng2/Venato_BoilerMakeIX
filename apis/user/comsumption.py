@@ -60,9 +60,7 @@ class Comsumption(Resource):
                     sql = 'SELECT * FROM production.grocery WHERE id = %d LIMIT 1' % id
                     status, err, ret = self.db_session.query(sql)
                     ans.append(*ret)
-
                 return {"status": 0, "ret": ans}
-
             else:
                 return {"status": -1, "msg": "Invalid meal_id"}
 
@@ -114,7 +112,7 @@ class Comsumption(Resource):
                 else:
                     return {"status": status, "msg": "Something went wrong"}
             else:
-                return {"status": status, "msg": "Something went wrong"}
+                return {"status": status, "msg": "The server returns nothing"}
         finally:
             self.db_session.close()
 

@@ -36,8 +36,5 @@ class Statics(Resource):
                   "GROUP BY category"
             status, err, ret = self.db_session.query(sql)
             return {"status": 0, "msg": ret}
-
-
-
         finally:
             self.db_session.close()

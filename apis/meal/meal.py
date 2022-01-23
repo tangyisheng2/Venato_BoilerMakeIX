@@ -52,7 +52,7 @@ class Meal(Resource):
                 else:
                     return {"status": status, "msg": "Something went wrong"}
             else:
-                return {"status": status, "msg": "Something went wrong"}
+                return {"status": status, "msg": "The server returns nothing"}
         finally:
             self.db_session.close()
 
@@ -107,7 +107,7 @@ class Meal(Resource):
                     else:
                         return {"status": status, "msg": "Some thing went wrong"}
                 else:
-                    return {"status": status, "msg": "Some thing went wrong"}
+                    return {"status": status, "msg": "The server returns nothing"}
             else:
                 return {"status": -1, "msg": "invalid input"}
         finally:

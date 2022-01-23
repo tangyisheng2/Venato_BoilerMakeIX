@@ -20,9 +20,9 @@ class Meal(Resource):
         self.db_session.init_connection()
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
-            parser.add_argument('start_date', type=str, required=False, help="Invalid user_id, shoule be in YYYY-MM-DD")
-            parser.add_argument('end_date', type=str, required=False, help="Invalid user_id, shoule be in YYYY-MM-DD")
+            parser.add_argument('user_id', type=int, required=True, help="Invalid user_id, should be int")
+            parser.add_argument('start_date', type=str, required=True, help="Invalid user_id, shoule be in YYYY-MM-DD")
+            parser.add_argument('end_date', type=str, required=True, help="Invalid user_id, shoule be in YYYY-MM-DD")
             args = parser.parse_args()
             user_id = args['user_id']
             start_date = args['start_date']
@@ -68,7 +68,8 @@ class Meal(Resource):
         try:
             json_data = request.get_json()
             # todo refine api
-            if len(json_data) >= 3 and "user_id" in json_data and "name" in json_data and "ingredient" in json_data:
+            if json_data and len(
+                    json_data) >= 3 and "user_id" in json_data and "name" in json_data and "ingredient" in json_data:
                 # todo parse ingredient data to subtract from grocery
                 # Insert Data to meal
                 user_id = json_data['user_id']
@@ -97,11 +98,14 @@ class Meal(Resource):
                 sql = 'SELECT * FROM production.meal WHERE id = %d LIMIT 1' % last_id
                 status, err, ret = self.db_session.query(sql)
                 # Convert date time to string
-                for record in ret:
-                    if 'date' in record:
-                        record['date'] = str(ret[0]['date']).split(" ")[0]
-                if status == 0:
-                    return {"status": status, "msg": ret}
+                if ret:
+                    for record in ret:
+                        if 'date' in record:
+                            record['date'] = str(ret[0]['date']).split(" ")[0]
+                    if status == 0:
+                        return {"status": status, "msg": ret}
+                    else:
+                        return {"status": status, "msg": "Some thing went wrong"}
                 else:
                     return {"status": status, "msg": "Some thing went wrong"}
             else:

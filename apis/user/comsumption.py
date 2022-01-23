@@ -3,6 +3,7 @@
 # @FileName  :comsumption.py
 # @Time      :1/21/22
 # @Author    :Eason Tang
+from flask import request
 from flask_restful import Resource, reqparse
 import db
 
@@ -16,7 +17,57 @@ class Comsumption(Resource):
         This function takes meal id and subtract the eaten groceries in the stock
         :return: User daily consumption
         """
-        return "This function takes meal id and subtract the eaten groceries in the stock"
+        self.db_session.init_connection()
+        try:
+            json_data = request.get_json()
+            if "meal_id" in json_data and "user_id" in json_data:
+                meal_id = json_data['meal_id']
+                user_id = json_data['user_id']
+                # Get the nutrition_id of the meal
+                sql = 'SELECT * FROM production.ingredient WHERE meal_id = %d' % meal_id
+                status, err, ret = self.db_session.query(sql)
+                nutrition_id = [str(record['nutrition_id']) for record in ret]
+                nutrition_abstract_nutrition_id = {}
+                for record in ret:
+                    id = record['nutrition_id']
+                    subtract_amount = record['amount_g']
+                    nutrition_abstract_nutrition_id[id] = subtract_amount
+
+                # Get the grocery id based on the nutrition_id and user_id
+                sql = 'SELECT * FROM production.grocery ' \
+                      'WHERE nutrition_id REGEXP "%s" AND user_id = %d;' % ("|".join(nutrition_id), user_id)
+                status, err, ret = self.db_session.query(sql)
+                # Create a hashmap store the grocery id to be subtracted and subtract amount
+                nutrition_abstract_grocery_id = {}
+                for record in ret:
+                    id = record['id']
+                    nutrition_id = record['nutrition_id']
+                    subtract_amount = nutrition_abstract_nutrition_id[nutrition_id]
+                    nutrition_abstract_grocery_id[id] = subtract_amount
+                # Update the grocery amount
+                ans = []
+                for id, subtract_amount in nutrition_abstract_grocery_id.items():
+                    # Get the original amount
+                    sql = 'SELECT * FROM production.grocery WHERE id = %d LIMIT 1' % id
+                    status, err, ret = self.db_session.query(sql)
+                    original_amount_g = ret[0]['amount_g']
+                    new_amount_g = original_amount_g - subtract_amount
+                    if new_amount_g < 0:  # Check if amount drops below 0
+                        return {"status": -1, "msg": "Invalid amount, might be subtracted too much"}
+                    sql = 'UPDATE production.grocery SET amount_g = %f WHERE id = %d LIMIT 1' % (new_amount_g, id)
+                    status, err, ret = self.db_session.query(sql)
+                    # Fetch the last modified
+                    sql = 'SELECT * FROM production.grocery WHERE id = %d LIMIT 1' % id
+                    status, err, ret = self.db_session.query(sql)
+                    ans.append(ret)
+
+                return {"status": 0, "ret": ans}
+
+            else:
+                return {"status": -1, "msg": "Invalid meal_id"}
+
+        finally:
+            self.db_session.close()
 
     def get(self):
         """
@@ -67,7 +118,6 @@ class Comsumption(Resource):
         finally:
             self.db_session.close()
 
-
     def subtract(self, user_id, nutrition_id, amount):
         self.db_session.init_connection()
         try:
@@ -94,7 +144,6 @@ class Comsumption(Resource):
 
         finally:
             self.db_session.close()
-
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ class Meals(Resource):
                 sql = 'SELECT m.*, i.amount_g, n.* FROM production.meal AS m ' \
                       'JOIN production.ingredient AS i ON i.meal_id = m.id ' \
                       'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
-                      'WHERE user_id = %d AND date IS NULL' % user_id
+                      'WHERE user_id = %d' % user_id
                 status, err, ret = self.db_session.query(sql)
                 if ret:
                     # Convert date time to string

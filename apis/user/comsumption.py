@@ -26,8 +26,17 @@ class Comsumption(Resource):
 
                 # SQL to copy something
                 sql = 'INSERT INTO production.meal (user_id, name, image_url) ' \
-                      '(SELECT user_id, name, image_url FROM meal WHERE id = %d' % user_id
+                      '(SELECT user_id, name, image_url FROM meal WHERE id = %d)' % meal_id
                 self.db_session.query(sql)
+
+                sql = 'SELECT * FROM ingredient WHERE meal_id = %d' % meal_id
+                status, err, ret = self.db_session.query(sql)
+
+                for record in ret:
+                    nutrition_id = record['nutrition_id']
+                    amount_g = record['amount_g']
+                    sql = 'INSERT INTO ingredient (meal_id, nutrition_id, amount_g) VALUES (%d, %d, %d)' % (meal_id, nutrition_id, amount_g)
+                    self.db_session.query(sql)
 
                 # Get the nutrition_id of the meal
                 sql = 'SELECT * FROM production.ingredient WHERE meal_id = %d' % meal_id

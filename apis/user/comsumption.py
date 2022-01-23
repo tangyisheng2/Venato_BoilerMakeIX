@@ -24,6 +24,11 @@ class Comsumption(Resource):
                 meal_id = json_data['meal_id']
                 user_id = json_data['user_id']
 
+                # SQL to copy something
+                sql = 'INSERT INTO production.meal (user_id, name, image_url) ' \
+                      '(SELECT user_id, name, image_url FROM meal WHERE id = %d' % user_id
+                self.db_session.query(sql)
+
                 # Get the nutrition_id of the meal
                 sql = 'SELECT * FROM production.ingredient WHERE meal_id = %d' % meal_id
                 status, err, ret = self.db_session.query(sql)
@@ -61,9 +66,6 @@ class Comsumption(Resource):
                     sql = 'SELECT * FROM production.grocery WHERE id = %d LIMIT 1' % id
                     status, err, ret = self.db_session.query(sql)
                     ans.append(*ret)
-                    sql = 'INSERT INTO production.meal (user_id, name, image_url) ' \
-                          '(SELECT user_id, name, image_url FROM meal WHERE id = %d' % user_id
-                    self.db_session.query(sql)
                 return {"status": 0, "ret": ans}
             else:
                 return {"status": -1, "msg": "Invalid meal_id"}

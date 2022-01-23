@@ -56,14 +56,28 @@ class Grocery(Resource):
             if json_data['userid'] and json_data['groceries']:
                 for grocery in json_data['groceries']:
                     if len(grocery) == 2 and grocery["nutrition_id"] and grocery["amount_g"]:
-                        # Add Grocery
-                        sql = "INSERT INTO production.grocery (user_id, nutrition_id, amount_g) VALUES (%d, %d, %f)" % \
-                              (json_data['userid'], grocery['nutrition_id'], grocery['amount_g'])
-                        self.db_session.query(sql)
-                        # Get the last insert ID
-                        sql = "SELECT last_insert_id()"
+                        # Check if the ID  exist
+                        sql = 'SELECT id, amount_g ' \
+                              'FROM production.grocery ' \
+                              'WHERE user_id = %d AND nutrition_id = %d ' \
+                              'LIMIT 1' % (json_data['userid'], grocery["nutrition_id"])
                         status, err, ret = self.db_session.query(sql)
-                        last_id = ret[0]['last_insert_id()']
+                        if ret:
+                            id = ret[0]['id']
+                            original_amount_g = ret[0]['amount_g']
+                            new_amount_g = original_amount_g + grocery["amount_g"]
+                            sql = 'UPDATE production.grocery SET amount_g = %f WHERE id = %d' % (new_amount_g, id)
+                            status, err, ret = self.db_session.query(sql)
+                            last_id = id
+                        else:
+                            # Add Grocery
+                            sql = "INSERT INTO production.grocery (user_id, nutrition_id, amount_g) VALUES (%d, %d, %f)" % \
+                                  (json_data['userid'], grocery['nutrition_id'], grocery['amount_g'])
+                            self.db_session.query(sql)
+                            # Get the last insert ID
+                            sql = "SELECT last_insert_id()"
+                            status, err, ret = self.db_session.query(sql)
+                            last_id = ret[0]['last_insert_id()']
                         # Fetch data based on that id
                         sql = "SELECT * FROM production.grocery WHERE id = %d LIMIT 1" % last_id
                         status, err, ret = self.db_session.query(sql)

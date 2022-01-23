@@ -29,7 +29,9 @@ class Grocery(Resource):
             if not ret:
                 return {"status": -1, "msg": "User id does not exist"}
             # Get Grocery based on user id
-            sql = "SELECT id, nutrition_id, amount_g FROM production.grocery WHERE user_id = %d" % user_id
+            sql = 'SELECT g.*, n.name FROM production.grocery AS g ' \
+                  'JOIN production.nutrition AS n ON g.nutrition_id = n.id ' \
+                  'WHERE user_id = %d' % user_id
             status, err, ret = self.db_session.query(sql)
             if status == 0:
                 return {"status": 0, "msg": ret}

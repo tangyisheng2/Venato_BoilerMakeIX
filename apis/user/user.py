@@ -84,10 +84,10 @@ class Meals(Resource):
             json_data = request.get_json()
             if "user_id" in json_data:
                 user_id = json_data['user_id']
-                sql = 'SELECT m.*, i.amount_g, n.name FROM production.meal AS m ' \
+                sql = 'SELECT m.*, i.amount_g, n.* FROM production.meal AS m ' \
                       'JOIN production.ingredient AS i ON i.meal_id = m.id ' \
                       'JOIN production.nutrition AS n ON i.nutrition_id = n.id ' \
-                      'WHERE user_id = %d' % user_id
+                      'WHERE user_id = %d AND date = NULL' % user_id
                 status, err, ret = self.db_session.query(sql)
                 if ret:
                     # Convert date time to string

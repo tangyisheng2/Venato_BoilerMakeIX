@@ -23,10 +23,11 @@ class Comsumption(Resource):
             if "meal_id" in json_data and "user_id" in json_data:
                 meal_id = json_data['meal_id']
                 user_id = json_data['user_id']
+                name = json_data['name']
 
                 # SQL to copy something
-                sql = 'INSERT INTO production.meal (user_id, name, image_url) ' \
-                      '(SELECT user_id, name, image_url FROM meal WHERE id = %d)' % meal_id
+                sql = 'INSERT INTO production.meal (user_id, name) ' \
+                      'VALUES (%d, "%s")' % (meal_id, name)
                 self.db_session.query(sql)
 
                 sql = 'SELECT * FROM ingredient WHERE meal_id = %d' % meal_id

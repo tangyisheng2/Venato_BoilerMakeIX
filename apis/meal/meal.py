@@ -77,7 +77,7 @@ class Meal(Resource):
                 ingredient = json_data['ingredient']
                 # sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
                 #       % (user_id, name, grocery)
-                sql = 'INSERT INTO production.meal (user_id, name, image_url, date) VALUES ("%d", "%s", "%s", null)' \
+                sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
                       % (user_id, name, None)
                 status, err, ret = self.db_session.query(sql)
                 # Get the last insert ID

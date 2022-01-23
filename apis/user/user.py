@@ -26,7 +26,7 @@ class LogIn(Resource):
                       f'AND password = "{str(json_data["password"])}" LIMIT  1'
                 status, errmsg, ret = self.db_session.query(sql)
                 if status == 0:  # Login Success
-                    return {"status": 0, "msg": {"userid": ret[0]['id'], "username": ret[0]['username']}}
+                    return {"status": 0, "msg": {"user_id": ret[0]['id'], "username": ret[0]['username']}}
                 else:
                     return {"status": status, "msg": errmsg}
             else:
@@ -59,7 +59,7 @@ class SignUp(Resource):
                           f'AND password = "{str(json_data["password"])}" LIMIT  1'
                     status, errmsg, ret = self.db_session.query(sql)
                     if status == 0:
-                        return {"status": 0, "msg": {"userid": ret[0]['id'], "username": ret[0]['username']}}
+                        return {"status": 0, "msg": {"user_id": ret[0]['id'], "username": ret[0]['username']}}
                     else:
                         return {"status": status, "msg": errmsg}
                 else:

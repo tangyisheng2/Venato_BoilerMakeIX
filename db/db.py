@@ -54,7 +54,7 @@ class DB():
         try:
             cursor = self.connection.cursor()
             cursor.execute(sql)
-            if "INSERT" in sql:
+            if "INSERT" in sql or "UPDATE" in sql:
                 self.connection.commit()
             ret = cursor.fetchall()
             return 0, None, ret

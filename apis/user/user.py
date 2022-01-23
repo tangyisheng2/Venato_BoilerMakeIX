@@ -99,7 +99,7 @@ class Meals(Resource):
                     else:
                         return {"status": status, "msg": "Something went wrong"}
                 else:
-                    return {"status": status, "msg": "Something went wrong"}
+                    return {"status": -1, "msg": "This SQL returns nothing"}
             else:
                 return {"status": -1, "msg": "Invalid Input"}
         finally:

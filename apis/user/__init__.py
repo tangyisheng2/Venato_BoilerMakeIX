@@ -6,7 +6,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .user import SignUp, LogIn
+from .user import SignUp, LogIn, Meals
 from .comsumption import Comsumption
 from .statics import Statics
 
@@ -16,3 +16,4 @@ api.add_resource(SignUp, '/user/signup')
 api.add_resource(LogIn, '/user/login')
 api.add_resource(Comsumption, "/user/consumption")
 api.add_resource(Statics, "/user/statics")
+api.add_resource(Meals, "/user/meals")

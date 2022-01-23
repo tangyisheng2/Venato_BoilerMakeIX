@@ -20,9 +20,13 @@ class Meal(Resource):
         self.db_session.init_connection()
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('user_id', type=int, required=False, help="Invalid user_id")
+            parser.add_argument('user_id', type=int, required=False, help="Invalid user_id, should be int")
+            parser.add_argument('start_date', type=str, required=False, help="Invalid user_id, shoule be in YYYY-MM-DD")
+            parser.add_argument('end_date', type=str, required=False, help="Invalid user_id, shoule be in YYYY-MM-DD")
             args = parser.parse_args()
             user_id = args['user_id']
+            start_date = args['start_date']
+            end_date = args['end_date']
             # Check if user id is existed
             sql = "SELECT id FROM production.user WHERE id = %d" % user_id
             status, err, ret = self.db_session.query(sql)
@@ -30,10 +34,19 @@ class Meal(Resource):
                 return {"status": -1, "msg": "User id does not exist"}
             # Get Meals from user id
             # todo Take care of the limit here
-            sql = "SELECT * FROM production.meal WHERE user_id = %d LIMIT 20" % user_id
+            sql = 'SELECT * FROM production.meal ' \
+                  'WHERE date >= "%s" AND date <= "%s" ' \
+                  'AND user_id = %d LIMIT 20' % (start_date, end_date, user_id)
             status, err, ret = self.db_session.query(sql)
-            if status == 0:
-                return {"status": 0, "msg": ret}
+            # Convert date time to string
+            if ret:
+                for record in ret:
+                    if 'date' in record:
+                        record['date'] = str(ret[0]['date']).split(" ")[0]
+                if status == 0:
+                    return {"status": 0, "msg": ret}
+                else:
+                    return {"status": status, "msg": "Something went wrong"}
             else:
                 return {"status": status, "msg": "Something went wrong"}
         finally:

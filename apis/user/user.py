@@ -75,7 +75,7 @@ class Meals(Resource):
 
     def post(self):
         """
-        This function takes username and password, verify it and login and return the userinfo
+        This function takes user_id and gets all the Users Meals
         :return:
         """
         self.db_session.init_connection()
@@ -98,4 +98,3 @@ class Meals(Resource):
                 return {"status": status, "msg": "Something went wrong"}
         finally:
             self.db_session.close()
-

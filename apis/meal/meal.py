@@ -77,7 +77,7 @@ class Meal(Resource):
                 ingredient = json_data['ingredient']
                 # sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
                 #       % (user_id, name, grocery)
-                sql = 'INSERT INTO production.meal (user_id, name, image_url) VALUES ("%d", "%s", "%s")' \
+                sql = 'INSERT INTO production.meal (user_id, name, image_url, date) VALUES ("%d", "%s", "%s", null)' \
                       % (user_id, name, None)
                 status, err, ret = self.db_session.query(sql)
                 # Get the last insert ID
@@ -89,8 +89,8 @@ class Meal(Resource):
                     if 'nutrition_id' in record and 'amount_g' in record:
                         nutrition_id = record['nutrition_id']
                         amount_g = record['amount_g']
-                        sql = 'INSERT INTO production.ingredient (meal_id, nutrition_id, amount_g, date) ' \
-                              'VALUES (%d, %d, %f, null)' % (last_id, nutrition_id, amount_g)
+                        sql = 'INSERT INTO production.ingredient (meal_id, nutrition_id, amount_g) ' \
+                              'VALUES (%d, %d, %f)' % (last_id, nutrition_id, amount_g)
                         status, err, ret = self.db_session.query(sql)
                     else:
                         return {"status": -1, "msg": "Failed to parse ingredient"}

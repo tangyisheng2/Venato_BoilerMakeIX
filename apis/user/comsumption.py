@@ -27,7 +27,7 @@ class Comsumption(Resource):
 
                 # SQL to copy something
                 sql = 'INSERT INTO production.meal (user_id, name) ' \
-                      'VALUES (%d, "%s")' % (meal_id, name)
+                      'VALUES (%d, "%s")' % (user_id, name)
                 self.db_session.query(sql)
 
                 sql = 'SELECT * FROM ingredient WHERE meal_id = %d' % meal_id
